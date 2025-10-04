@@ -6,9 +6,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
-// Create EnvConfig and use it for FoundryBlazor service registration
+// Add FoundryBlazor services for Canvas2DComponent
 var envConfig = new EnvConfig("./.env");
-// This registers all required services: IWorkspace, IFoundryService, ComponentBus, etc.
 builder.Services.AddFoundryBlazorServices(envConfig);
 
 var app = builder.Build();

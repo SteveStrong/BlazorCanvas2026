@@ -1,0 +1,53 @@
+@page "/canvas2d"
+@using FoundryBlazor.Shared
+@using FoundryBlazor.Solutions
+
+<PageTitle>Canvas2D</PageTitle>
+
+<h1>FoundryBlazor Canvas2D</h1>
+
+<div class="canvas-layout">
+    <div class="canvas-container">
+        <div style="border: 1px solid #000; background-color: #f0f0f0; display: inline-block;">
+            <Canvas2DComponent 
+                SceneName="@SceneName" 
+                CanvasWidth="@CanvasWidth" 
+                CanvasHeight="@CanvasHeight" />
+        </div>
+    </div>
+
+    <div class="canvas-controls">
+        <div class="control-section">
+            <h5>Canvas Settings</h5>
+            <div class="control-group">
+                <label class="mb-2">
+                    <strong>Width:</strong>
+                    <input type="range" min="400" max="1600" @bind="CanvasWidth" @bind:event="oninput" class="form-range">
+                    <span class="badge bg-secondary">@CanvasWidth</span>
+                </label>
+                <label class="mb-2">
+                    <strong>Height:</strong>
+                    <input type="range" min="300" max="1200" @bind="CanvasHeight" @bind:event="oninput" class="form-range">
+                    <span class="badge bg-secondary">@CanvasHeight</span>
+                </label>
+                <label class="mb-2">
+                    <strong>Scene Name:</strong>
+                    <input type="text" @bind="SceneName" class="form-control" placeholder="Enter scene name">
+                </label>
+            </div>
+        </div>
+
+        <div class="control-section">
+            <h5>Service Status</h5>
+            <div class="control-group">
+                @if (!string.IsNullOrEmpty(serviceInfo))
+                {
+                    <div class="alert alert-info">
+                        <small>@serviceInfo</small>
+                    </div>
+                }
+                <button class="btn btn-info mb-2" @onclick="TestServices">Test Services</button>
+            </div>
+        </div>
+    </div>
+</div>
