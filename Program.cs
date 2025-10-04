@@ -1,13 +1,15 @@
-using BlazorCanvas2026.Data;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
+using FoundryBlazor;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<WeatherForecastService>();
+
+// Create EnvConfig and use it for FoundryBlazor service registration
+var envConfig = new EnvConfig("./.env");
+// This registers all required services: IWorkspace, IFoundryService, ComponentBus, etc.
+builder.Services.AddFoundryBlazorServices(envConfig);
 
 var app = builder.Build();
 

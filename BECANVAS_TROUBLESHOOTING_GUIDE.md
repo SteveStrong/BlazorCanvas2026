@@ -381,7 +381,82 @@ dotnet list package | grep -i canvas
 
 ## Advanced Scenarios
 
-### 🚀 1. Multiple Canvas Components
+### 🚀 1. Foundry-Style Architecture Pattern
+
+The **Foundry Canvas** implementation demonstrates a sophisticated pattern inspired by the FoundryBlazor project:
+
+#### Key Components:
+- **Canvas2DComponent Pattern**: Advanced component with workspace, animation system, and pub/sub events
+- **Shape Management System**: Object-oriented drawing with relationships and animations
+- **Input Wrapper Pattern**: Centralized event handling that publishes events to components
+- **Animation Framework**: Timer-based rendering with context links between shapes
+
+#### Example Implementation:
+```csharp
+// Shape with context linking (like FoundryBlazor FoShape2D)
+var s1 = new SimpleShape(50, 50, "Green");
+s1.MoveTo(200, 200);
+
+var s2 = new SimpleShape(30, 15, "Blue");
+s2.ContextLink = (obj, tick) =>
+{
+    obj.X = s1.X;        // Follow first shape
+    obj.Y = s1.Y;
+    obj.Angle += 2;      // But rotate continuously
+    return Task.CompletedTask;
+};
+
+// Animation system with timer-based rendering
+private async Task AnimationTick()
+{
+    tick++;
+    
+    // Update all animated shapes
+    foreach (var shape in animatedShapes)
+        shape.Update();
+    
+    // Execute context links (shape relationships)
+    foreach (var shape in shapes)
+        if (shape.ContextLink != null)
+            await shape.ContextLink(shape, tick);
+    
+    await RenderFrame();
+}
+```
+
+#### Advanced Features Demonstrated:
+- ✅ **Workspace Pattern**: Centralized drawing management
+- ✅ **Shape Relationships**: Objects that follow or interact with other objects
+- ✅ **Animation Framework**: Timer-based continuous rendering
+- ✅ **Event Publishing**: Input events published to subscribers
+- ✅ **Custom Drawing**: Shapes with custom rendering methods
+- ✅ **Batch Rendering**: BeginBatch/EndBatch for performance
+
+#### Canvas Input Wrapper Pattern:
+```html
+<!-- Foundry-style input handling -->
+<div class="canvas-wrapper" 
+     @onmousedown="OnMouseDown" 
+     @onmousemove="OnMouseMove" 
+     @onmouseup="OnMouseUp">
+    <BECanvas @ref="BECanvasReference" Width="@CanvasWidth" Height="@CanvasHeight" />
+</div>
+```
+
+```csharp
+// Event publishing (inspired by FoundryBlazor CanvasInputWrapper)
+private async Task OnMouseDown(MouseEventArgs args)
+{
+    // Create interactive elements at mouse position
+    var shape = new SimpleShape(30, 30, GetRandomColor());
+    shape.MoveTo(args.OffsetX, args.OffsetY);
+    shapes.Add(shape);
+    
+    await RenderFrame();
+}
+```
+
+### 🚀 2. Multiple Canvas Components
 ```csharp
 // Each canvas needs its own context
 protected BECanvasComponent? canvas1;

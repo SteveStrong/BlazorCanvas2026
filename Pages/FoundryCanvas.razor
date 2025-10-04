@@ -1,0 +1,170 @@
+@page "/foundrycanvas"
+
+<PageTitle>Foundry Canvas Placeholder</PageTitle>
+
+<h1>FoundryBlazor Canvas2D (Placeholder)</h1>
+<p>This will show the Canvas2D component when services are properly configured.</p>
+
+<div class="simple-placeholder">
+    <div class="placeholder-canvas">
+        <h4>Canvas2D Component Will Appear Here</h4>
+        <div class="placeholder-box">
+            <p>Scene: FoundryCanvasDemo</p>
+            <p>Width: 800px</p>
+            <p>Height: 600px</p>
+            <p class="text-muted">Waiting for FoundryBlazor service registration...</p>
+        </div>
+    </div>
+    
+    <div class="placeholder-controls">
+        <h5>Future Controls:</h5>
+        <button class="btn btn-secondary" disabled>Create Playground</button>
+        <button class="btn btn-secondary" disabled>Trigger Animation</button>
+        <button class="btn btn-secondary" disabled>Add Shape</button>
+        <button class="btn btn-secondary" disabled>Clear Canvas</button>
+    </div>
+</div>
+
+<style>
+    .simple-placeholder {
+        display: flex;
+        gap: 20px;
+        padding: 20px;
+    }
+    
+    .placeholder-canvas {
+        flex: 1;
+    }
+    
+    .placeholder-box {
+        border: 2px dashed #ccc;
+        padding: 40px;
+        text-align: center;
+        background: #f8f9fa;
+        border-radius: 8px;
+        width: 800px;
+        height: 600px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    
+    .placeholder-controls button {
+        display: block;
+        width: 200px;
+        margin-bottom: 10px;
+    }
+</style>
+
+<style>
+/* Dark theme for the Foundry Canvas page */
+body {
+    background-color: #1a1a1a !important;
+    color: #e0e0e0 !important;
+}
+
+.foundry-canvas-layout {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    justify-content: flex-start;
+    margin: 20px;
+    flex-wrap: nowrap;
+    background-color: #2d2d2d;
+    padding: 20px;
+    border-radius: 10px;
+    min-height: calc(100vh - 200px);
+}
+
+.foundry-canvas-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.canvas-wrapper {
+    border: 3px solid #444;
+    background-color: #f8f9fa;
+    cursor: crosshair;
+    display: inline-block;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+}
+
+.foundry-controls {
+    min-width: 300px;
+    max-width: 320px;
+    background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+    color: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    border: 2px solid #4a5568;
+    flex-shrink: 0;
+}
+
+.control-section {
+    margin-bottom: 25px;
+}
+
+.control-section h5 {
+    color: #fff;
+    margin-bottom: 15px;
+    border-bottom: 2px solid rgba(255,255,255,0.3);
+    padding-bottom: 8px;
+    font-weight: 600;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.control-group .btn {
+    width: 100%;
+    padding: 8px 12px;
+    font-weight: 500;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.control-group .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.control-group p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #e0e0e0;
+}
+
+.control-group small {
+    color: #a0a0a0;
+    font-style: italic;
+}
+
+/* Dark theme for the entire page */
+h1 {
+    color: #e0e0e0 !important;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+p {
+    color: #c0c0c0 !important;
+}
+
+/* Ensure buttons maintain good contrast */
+.btn-outline-light {
+    border-color: #e0e0e0;
+    color: #e0e0e0;
+}
+
+.btn-outline-light:hover {
+    background-color: #e0e0e0;
+    color: #2d3748;
+}
+</style>

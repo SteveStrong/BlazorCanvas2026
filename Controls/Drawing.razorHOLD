@@ -1,0 +1,61 @@
+﻿
+@page "/Drawing"
+
+@using FoundryBlazor.Shared;
+@using FoundryRulesAndUnits.Extensions;
+@using eDesignStudio.Components.Layout;
+
+@using eDesignStudio.Controls
+
+@rendermode InteractiveServer
+
+@namespace eDesignStudio.Pages.DrawingPage
+@inherits DrawingPage
+
+<PageTitle>Drawing</PageTitle>
+
+
+ <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Start" Wrap="FlexWrap.Wrap">
+    <AppMenu View="Drawing"></AppMenu>
+    @foreach (var drawingPage in AllPages())
+    {
+        <RadzenButton Variant="Variant.Text" Text=@drawingPage.GetName() Click=@(args => GoToPage(drawingPage))
+            ButtonStyle="ButtonStyle.Primary" />
+    }
+ </RadzenStack>
+
+
+
+<RadzenSplitter Orientation="Orientation.Vertical"  style="height: 1400px; border: 1px solid rgba(0,0,0,.08);">
+    <RadzenSplitterPane Size="100px">
+        <RadzenSplitter >
+            <RadzenSplitterPane Size="50%" Min="30px" >
+              <Canvas2DComponent SceneName="Drawing1" CanvasWidth="@DrawingWidth" CanvasHeight="@DrawingHeight" />
+            </RadzenSplitterPane>
+
+            <RadzenSplitterPane Min="30px" >
+                     
+                <RadzenTabs>
+                    <Tabs>
+                        <RadzenTabsItem Text="Model View">
+                            <DesignTreeView/>
+                        </RadzenTabsItem>
+                        <RadzenTabsItem Text="World View">
+                            <ShapeTreeView/>
+                        </RadzenTabsItem>
+                    </Tabs>
+                </RadzenTabs>
+
+            </RadzenSplitterPane>
+        </RadzenSplitter>
+    </RadzenSplitterPane>
+
+
+</RadzenSplitter>
+
+<style>
+    .diagram-canvas {
+        width: 100%;
+        height: 1400px;
+    }
+</style>

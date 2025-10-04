@@ -2,120 +2,109 @@
 let animationId = null;
 let animatedShapes = [];
 
-window.initializeCanvas = (canvas) => {
-    const ctx = canvas.getContext('2d');
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    // Set light gray background
-    ctx.fillStyle = '#f0f0f0';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-};
+window.canvasInterop = {
+    initializeCanvas: (canvas) => {
+        const ctx = canvas.getContext('2d');
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        // Set light gray background
+        ctx.fillStyle = '#f0f0f0';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    },
 
-window.getCanvasRect = (canvas) => {
-    const rect = canvas.getBoundingClientRect();
-    return {
-        left: rect.left,
-        top: rect.top,
-        right: rect.right,
-        bottom: rect.bottom,
-        width: rect.width,
-        height: rect.height
-    };
-};
+    beginPath: (canvas, x, y) => {
+        const ctx = canvas.getContext('2d');
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+    },
 
-window.startPath = (canvas, x, y, color, lineWidth) => {
-    const ctx = canvas.getContext('2d');
-    ctx.strokeStyle = color;
-    ctx.lineWidth = lineWidth;
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-};
+    drawLine: (canvas, x, y, color, lineWidth) => {
+        const ctx = canvas.getContext('2d');
+        ctx.strokeStyle = color;
+        ctx.lineWidth = lineWidth;
+        ctx.lineTo(x, y);
+        ctx.stroke();
+    },
 
-window.drawLine = (canvas, x, y) => {
-    const ctx = canvas.getContext('2d');
-    ctx.lineTo(x, y);
-    ctx.stroke();
-};
+    clearCanvas: (canvas) => {
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // Restore light gray background
+        ctx.fillStyle = '#f0f0f0';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    },
 
-window.clearCanvas = (canvas) => {
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    // Restore light gray background
-    ctx.fillStyle = '#f0f0f0';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-};
+    drawRectangle: (canvas, x, y, width, height, color, lineWidth) => {
+        const ctx = canvas.getContext('2d');
+        ctx.strokeStyle = color;
+        ctx.lineWidth = lineWidth;
+        ctx.strokeRect(x, y, width, height);
+    },
 
-window.drawRectangle = (canvas, x, y, width, height, color, lineWidth) => {
-    const ctx = canvas.getContext('2d');
-    ctx.strokeStyle = color;
-    ctx.lineWidth = lineWidth;
-    ctx.strokeRect(x, y, width, height);
-};
+    drawCircle: (canvas, x, y, radius, color, lineWidth) => {
+        const ctx = canvas.getContext('2d');
+        ctx.strokeStyle = color;
+        ctx.lineWidth = lineWidth;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, 2 * Math.PI);
+        ctx.stroke();
+    },
 
-window.drawCircle = (canvas, x, y, radius, color, lineWidth) => {
-    const ctx = canvas.getContext('2d');
-    ctx.strokeStyle = color;
-    ctx.lineWidth = lineWidth;
-    ctx.beginPath();
-    ctx.arc(x, y, radius, 0, 2 * Math.PI);
-    ctx.stroke();
-};
+    drawFilledRectangle: (canvas, x, y, width, height, color) => {
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = color;
+        ctx.fillRect(x, y, width, height);
+    },
 
-window.drawFilledRectangle = (canvas, x, y, width, height, color) => {
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = color;
-    ctx.fillRect(x, y, width, height);
-};
+    drawFilledCircle: (canvas, x, y, radius, color) => {
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, 2 * Math.PI);
+        ctx.fill();
+    },
 
-window.drawFilledCircle = (canvas, x, y, radius, color) => {
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.arc(x, y, radius, 0, 2 * Math.PI);
-    ctx.fill();
-};
+    startAnimation: (canvas) => {
+        // Initialize animated shapes
+        animatedShapes = [
+            {
+                type: 'circle',
+                x: 0,
+                y: 150,
+                radius: 30,
+                color: '#ff6b6b',
+                speed: 2,
+                direction: 1
+            },
+            {
+                type: 'rectangle',
+                x: 0,
+                y: 300,
+                width: 60,
+                height: 40,
+                color: '#4ecdc4',
+                speed: 1.5,
+                direction: 1
+            },
+            {
+                type: 'circle',
+                x: 800,
+                y: 450,
+                radius: 25,
+                color: '#45b7d1',
+                speed: 2.5,
+                direction: -1
+            }
+        ];
+        
+        animate(canvas);
+    },
 
-// Animation functions
-window.startAnimation = (canvas) => {
-    // Initialize animated shapes
-    animatedShapes = [
-        {
-            type: 'circle',
-            x: 0,
-            y: 150,
-            radius: 30,
-            color: '#ff6b6b',
-            speed: 2,
-            direction: 1
-        },
-        {
-            type: 'rectangle',
-            x: 0,
-            y: 300,
-            width: 60,
-            height: 40,
-            color: '#4ecdc4',
-            speed: 1.5,
-            direction: 1
-        },
-        {
-            type: 'circle',
-            x: 800,
-            y: 450,
-            radius: 25,
-            color: '#45b7d1',
-            speed: 2.5,
-            direction: -1
+    stopAnimation: () => {
+        if (animationId) {
+            cancelAnimationFrame(animationId);
+            animationId = null;
         }
-    ];
-    
-    animate(canvas);
-};
-
-window.stopAnimation = () => {
-    if (animationId) {
-        cancelAnimationFrame(animationId);
-        animationId = null;
     }
 };
 

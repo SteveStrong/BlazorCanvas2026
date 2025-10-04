@@ -1,0 +1,126 @@
+using BlazorComponentBus;
+using FoundryBlazor.Shared;
+using FoundryBlazor.Solutions;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Routing;
+using Microsoft.JSInterop;
+
+using FoundryRulesAndUnits.Extensions;
+using FoundryBlazor.Shape;
+using Radzen;
+using eDesignStudio.Workbooks;
+using Plugin_710.Model;
+using FoundryVault.Services;
+
+
+namespace eDesignStudio.Pages.DrawingPage;
+
+public partial class DrawingPage : ComponentBase
+{
+    [Inject] public NavigationManager Navigation { get; set; }
+    [Inject] protected IJSRuntime JsRuntime { get; set; }
+    [Inject] private ComponentBus PubSub { get; set; }
+    [Inject] private IToast Toast { get; set; }
+    [Inject] public IWorkspace Workspace { get; init; }
+    [Inject] public IMentorServices MentorServices { get; init; }
+
+    [Inject] public IMentorPlayground MentorPlayground { get; init; }
+
+
+    private MentorWorkbook Workbook { get; set; }
+
+
+    [Parameter] public int DrawingWidth { get; set; } = 2000;
+    [Parameter] public int DrawingHeight { get; set; } = 1800;
+
+    [Parameter]
+    public string LoadWorkbook { get; set; }
+
+    
+
+    protected override void OnInitialized()
+    {
+        Workspace!.SetBaseUrl(Navigation?.BaseUri ?? "");
+        // if (Navigation != null)
+        //     Navigation.LocationChanged += LocationChanged;
+
+
+        //create all worksbooks for reuse later, but only show the one we want
+        Workbook = Workspace.EstablishWorkbook<MentorWorkbook>("knowledge");
+        Workbook.SetMentorService(MentorServices!,MentorPlayground);
+
+        
+        Workspace.SetCurrentWorkbook(Workbook);
+        Workspace.CreateMenus(Workspace, JsRuntime!, Navigation!);
+
+        //RefreshWorkbookMenus();
+
+        var page = Workbook.CurrentPage();
+        $"new current page {page.Title}".WriteInfo();
+
+
+
+        var url = ""; //RestAPI?.GetServerUrl() ?? "";
+        Workspace?.CreateCommands(Workspace, JsRuntime!, Navigation!, url);
+
+        base.OnInitialized();
+    }
+    public List<FoPage2D> AllPages()
+    {
+        var drawing = Workspace!.GetDrawing()!;
+        var manager = drawing.Pages();
+        return manager.GetAllPages();
+    }
+    public bool GoToPage(FoPage2D page)
+    {
+        var drawing = Workspace!.GetDrawing()!;
+        drawing.SetCurrentPage(page);
+        return true;
+    }
+
+    
+    public void Dispose()
+    {
+        // if (Navigation != null)
+        //     Navigation.LocationChanged -= LocationChanged;
+    }
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Workspace != null)
+        {
+            var defaultHubURI = Navigation!.ToAbsoluteUri("/DrawingSyncHub").ToString();
+            await Workspace.InitializedAsync(defaultHubURI!);
+
+            if (LoadWorkbook != null)
+            {
+                var text = LoadWorkbook == null ? "No Workbook" : $"LoadWorkbook={LoadWorkbook}";
+                Toast?.Info(text);
+            }
+        }
+
+        await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            //PubSub!.SubscribeTo<ViewStyle>(OnViewStyleChanged);
+            //Toast!.Success($"Drawing Page Loaded!");
+            Workspace!.GetDrawing();
+            Workspace!.GetArena();
+
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    // private void OnViewStyleChanged(ViewStyle e)
+    // {
+    //     Workspace?.SetViewStyle(e);
+    //     InvokeAsync(StateHasChanged);
+    // }
+}
