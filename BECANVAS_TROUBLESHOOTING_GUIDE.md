@@ -1,5 +1,31 @@
 # Blazor.Extensions.Canvas (BECanvas) Implementation & Troubleshooting Guide
 
+## 🚨 CRITICAL DISCOVERY: JavaScript Loading Order (October 4, 2025)
+
+**If your canvas components from external libraries aren't rendering, check JavaScript loading order FIRST!**
+
+### The Problem
+Server-Side Blazor components can initialize before external RCL JavaScript finishes loading, causing:
+- `Could not find 'AppBrowser.Initialize' ('AppBrowser' was undefined)`
+- Canvas appears but doesn't respond to interactions
+- Silent JavaScript interop failures
+
+### The Solution
+Load external RCL JavaScript IMMEDIATELY after `blazor.server.js`:
+
+```html
+<!-- _Host.cshtml - CORRECT ORDER -->
+<script src="_framework/blazor.server.js"></script>
+<script src="_content/Blazor.Extensions.Canvas/blazor.extensions.canvas.js"></script>
+<script src="_content/FoundryBlazor/js/app-lib.js"></script> <!-- Load RCL JS FIRST -->
+<script src="js/canvas.js"></script>
+<script src="js/blazor-campus.js"></script>
+```
+
+**📋 See [JAVASCRIPT_LOADING_ORDER_SOLUTION.md](./JAVASCRIPT_LOADING_ORDER_SOLUTION.md) for complete details.**
+
+---
+
 ## Table of Contents
 1. [Quick Setup Checklist](#quick-setup-checklist)
 2. [Common Issues & Solutions](#common-issues--solutions)

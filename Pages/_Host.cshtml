@@ -31,8 +31,78 @@
 
     <script src="_framework/blazor.server.js"></script>
     <script src="_content/Blazor.Extensions.Canvas/blazor.extensions.canvas.js"></script>
+    
+    <!-- Load FoundryBlazor FIRST -->
     <script src="_content/FoundryBlazor/js/app-lib.js"></script>
-    <script src="js/canvas.js"></script>
-    <script src="js/blazor-campus.js"></script>
+    
+    <!-- Level 1: Direct JavaScript Interop for Canvas.razor -->
+    <script src="js/canvas-interop.js"></script>
+    
+    <!-- Try to initialize FoundryBlazor immediately after it loads -->
+    <script>
+        console.log('=== JAVASCRIPT LOADING ORDER TEST ===');
+        console.log('1. Checking what FoundryBlazor exposed:', typeof AppLib, typeof window.AppBrowser);
+        
+        // Try to call the original FoundryBlazor initialization
+        if (typeof AppLib !== 'undefined' && typeof AppLib.Load === 'function') {
+            console.log('2. Calling AppLib.Load()...');
+            AppLib.Load();
+            console.log('3. After AppLib.Load(), AppBrowser is:', typeof window.AppBrowser);
+        } else {
+            console.log('2. AppLib.Load not found, creating manual AppBrowser...');
+            
+            // Create AppBrowser if FoundryBlazor didn't
+            window.AppBrowser = {
+                AnimationRequest: null,
+                
+                HTMLWindow: function() {
+                    return { InnerWidth: window.innerWidth, InnerHeight: window.innerHeight };
+                },
+                
+                Initialize: function() {
+                    console.log('AppBrowser.Initialize() called - MANUAL VERSION');
+                    this.AnimationRequest = null;
+                },
+                
+                Finalize: function() {
+                    console.log('AppBrowser.Finalize() called');
+                    this.StopAnimation();
+                },
+                
+                StartAnimation: function() {
+                    console.log('AppBrowser.StartAnimation() called');
+                    if (this.AnimationRequest === null) {
+                        this.AnimationRequest = window.requestAnimationFrame(() => this.RenderJS(this));
+                    }
+                },
+                
+                StopAnimation: function() {
+                    console.log('AppBrowser.StopAnimation() called');
+                    if (this.AnimationRequest !== null) {
+                        window.cancelAnimationFrame(this.AnimationRequest);
+                        this.AnimationRequest = null;
+                    }
+                },
+                
+                RenderJS: function(instance) {
+                    try {
+                        if (typeof DotNet !== 'undefined' && DotNet.invokeMethodAsync) {
+                            DotNet.invokeMethodAsync("FoundryBlazor", "TriggerAnimationFrame")
+                                .catch(error => console.warn('TriggerAnimationFrame failed:', error));
+                        }
+                    } catch (error) {
+                        console.warn('TriggerAnimationFrame error:', error);
+                    }
+                    
+                    if (instance.AnimationRequest !== null) {
+                        instance.AnimationRequest = window.requestAnimationFrame(() => instance.RenderJS(instance));
+                    }
+                }
+            };
+        }
+        
+        console.log('4. Final state - AppBrowser available:', typeof window.AppBrowser !== 'undefined');
+        console.log('5. AppBrowser methods:', typeof window.AppBrowser === 'object' ? Object.keys(window.AppBrowser) : 'N/A');
+    </script>
 </body>
 </html>

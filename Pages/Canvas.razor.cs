@@ -16,6 +16,14 @@ namespace BlazorCanvas2026.Pages
         [Inject]
         protected IJSRuntime JSRuntime { get; set; } = default!;
 
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                await JSRuntime.InvokeVoidAsync("canvasInterop.initializeCanvas", canvasElement);
+            }
+        }
+
         private async Task StartDrawing(MouseEventArgs e)
         {
             isDrawing = true;
@@ -62,14 +70,22 @@ namespace BlazorCanvas2026.Pages
 
         private async Task StartAnimation()
         {
-            animationRunning = true;
-            await JSRuntime.InvokeVoidAsync("canvasInterop.startAnimation", canvasElement);
+            if (!animationRunning)
+            {
+                animationRunning = true;
+                await JSRuntime.InvokeVoidAsync("canvasInterop.startAnimation", canvasElement);
+                StateHasChanged();
+            }
         }
 
         private async Task StopAnimation()
         {
-            animationRunning = false;
-            await JSRuntime.InvokeVoidAsync("canvasInterop.stopAnimation", canvasElement);
+            if (animationRunning)
+            {
+                animationRunning = false;
+                await JSRuntime.InvokeVoidAsync("canvasInterop.stopAnimation");
+                StateHasChanged();
+            }
         }
     }
 }

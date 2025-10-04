@@ -1,13 +1,9 @@
-// Canvas drawing functionality
-let animationId = null;
-let animatedShapes = [];
-
+// Direct JavaScript Canvas Interop - Level 1 Approach
 window.canvasInterop = {
     initializeCanvas: (canvas) => {
         const ctx = canvas.getContext('2d');
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
-        // Set light gray background
         ctx.fillStyle = '#f0f0f0';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     },
@@ -29,7 +25,6 @@ window.canvasInterop = {
     clearCanvas: (canvas) => {
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        // Restore light gray background
         ctx.fillStyle = '#f0f0f0';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     },
@@ -64,85 +59,55 @@ window.canvasInterop = {
         ctx.fill();
     },
 
+    // Animation support
+    animatedShapes: [],
+    animationId: null,
+
     startAnimation: (canvas) => {
-        // Initialize animated shapes
-        animatedShapes = [
-            {
-                type: 'circle',
-                x: 0,
-                y: 150,
-                radius: 30,
-                color: '#ff6b6b',
-                speed: 2,
-                direction: 1
-            },
-            {
-                type: 'rectangle',
-                x: 0,
-                y: 300,
-                width: 60,
-                height: 40,
-                color: '#4ecdc4',
-                speed: 1.5,
-                direction: 1
-            },
-            {
-                type: 'circle',
-                x: 800,
-                y: 450,
-                radius: 25,
-                color: '#45b7d1',
-                speed: 2.5,
-                direction: -1
-            }
+        canvasInterop.animatedShapes = [
+            { x: 50, y: 50, dx: 2, dy: 1.5, radius: 20, color: '#ff6b6b' },
+            { x: 200, y: 150, dx: -1.5, dy: 2, radius: 15, color: '#4ecdc4' },
+            { x: 400, y: 300, dx: 1, dy: -2.5, radius: 25, color: '#45b7d1' }
         ];
-        
-        animate(canvas);
+        canvasInterop.animate(canvas);
     },
 
     stopAnimation: () => {
-        if (animationId) {
-            cancelAnimationFrame(animationId);
-            animationId = null;
+        if (canvasInterop.animationId) {
+            cancelAnimationFrame(canvasInterop.animationId);
+            canvasInterop.animationId = null;
         }
-    }
-};
+    },
 
-function animate(canvas) {
-    const ctx = canvas.getContext('2d');
-    
-    // Clear canvas and restore background
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = '#f0f0f0';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // Update and draw animated shapes
-    animatedShapes.forEach(shape => {
-        // Update position
-        shape.x += shape.speed * shape.direction;
+    animate: (canvas) => {
+        const ctx = canvas.getContext('2d');
         
-        // Bounce off edges
-        if (shape.type === 'circle') {
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#f0f0f0';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Update and draw shapes
+        canvasInterop.animatedShapes.forEach(shape => {
+            shape.x += shape.dx;
+            shape.y += shape.dy;
+            
+            // Bounce off walls
             if (shape.x - shape.radius <= 0 || shape.x + shape.radius >= canvas.width) {
-                shape.direction *= -1;
+                shape.dx *= -1;
             }
-        } else if (shape.type === 'rectangle') {
-            if (shape.x <= 0 || shape.x + shape.width >= canvas.width) {
-                shape.direction *= -1;
+            if (shape.y - shape.radius <= 0 || shape.y + shape.radius >= canvas.height) {
+                shape.dy *= -1;
             }
-        }
-        
-        // Draw shape
-        ctx.fillStyle = shape.color;
-        if (shape.type === 'circle') {
+            
+            // Draw shape
+            ctx.fillStyle = shape.color;
             ctx.beginPath();
             ctx.arc(shape.x, shape.y, shape.radius, 0, 2 * Math.PI);
             ctx.fill();
-        } else if (shape.type === 'rectangle') {
-            ctx.fillRect(shape.x, shape.y, shape.width, shape.height);
-        }
-    });
-    
-    // Continue animation
-    animationId = requestAnimationFrame(() => animate(canvas));
-}
+        });
+        
+        // Continue animation
+        canvasInterop.animationId = requestAnimationFrame(() => canvasInterop.animate(canvas));
+    }
+};

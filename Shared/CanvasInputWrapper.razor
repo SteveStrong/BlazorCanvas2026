@@ -1,0 +1,18 @@
+@namespace BlazorCanvas2026.Shared
+
+<div class="canvas-input-wrapper" @attributes="@AdditionalAttributes">
+    @ChildContent
+</div>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object>? AdditionalAttributes { get; set; }
+}
+
+<style>
+    .canvas-input-wrapper {
+        position: relative;
+        display: inline-block;
+        overflow: hidden;
+    }
+</style>

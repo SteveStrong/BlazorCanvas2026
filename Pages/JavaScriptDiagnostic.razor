@@ -1,0 +1,156 @@
+@page "/jsdiag"
+@using Microsoft.AspNetCore.Components.Web
+@inject IJSRuntime JSRuntime
+
+<h1>JavaScript Library Loading Diagnostic</h1>
+
+<div class="alert alert-info">
+    <h4>Testing JavaScript Library Availability</h4>
+    <p>This page tests if all required JavaScript libraries are properly loaded.</p>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Library Status</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-2">
+                    <strong>AppBrowser:</strong> 
+                    <span class="badge @(appBrowserAvailable ? "bg-success" : "bg-danger")">
+                        @(appBrowserAvailable ? "Available" : "Not Available")
+                    </span>
+                </div>
+                <div class="mb-2">
+                    <strong>BlazorExtensions:</strong> 
+                    <span class="badge @(blazorExtensionsAvailable ? "bg-success" : "bg-danger")">
+                        @(blazorExtensionsAvailable ? "Available" : "Not Available")
+                    </span>
+                </div>
+                <div class="mb-2">
+                    <strong>AppLib:</strong> 
+                    <span class="badge @(appLibAvailable ? "bg-success" : "bg-danger")">
+                        @(appLibAvailable ? "Available" : "Not Available")
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Test Actions</h5>
+            </div>
+            <div class="card-body">
+                <button class="btn btn-primary mb-2 w-100" @onclick="TestJavaScriptLibraries">
+                    🔍 Test All Libraries
+                </button>
+                <button class="btn btn-secondary mb-2 w-100" @onclick="TestAppBrowserInit">
+                    🚀 Test AppBrowser.Initialize
+                </button>
+                <button class="btn btn-warning mb-2 w-100" @onclick="TestBlazorExtensions">
+                    🌟 Test Blazor Extensions
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(diagnosticMessage))
+{
+    <div class="alert @alertClass mt-3">
+        <h6>Last Test Result:</h6>
+        <pre>@diagnosticMessage</pre>
+    </div>
+}
+
+@code {
+    private bool appBrowserAvailable = false;
+    private bool blazorExtensionsAvailable = false;
+    private bool appLibAvailable = false;
+    private string diagnosticMessage = "";
+    private string alertClass = "alert-info";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await TestJavaScriptLibraries();
+        }
+    }
+
+    private async Task TestJavaScriptLibraries()
+    {
+        try
+        {
+            appBrowserAvailable = await JSRuntime.InvokeAsync<bool>("eval", "typeof AppBrowser !== 'undefined'");
+            blazorExtensionsAvailable = await JSRuntime.InvokeAsync<bool>("eval", "typeof BlazorExtensions !== 'undefined'");
+            appLibAvailable = await JSRuntime.InvokeAsync<bool>("eval", "typeof AppLib !== 'undefined'");
+            
+            diagnosticMessage = $"Library Check Complete:\n" +
+                              $"AppBrowser: {appBrowserAvailable}\n" +
+                              $"BlazorExtensions: {blazorExtensionsAvailable}\n" +
+                              $"AppLib: {appLibAvailable}";
+            alertClass = "alert-success";
+        }
+        catch (Exception ex)
+        {
+            diagnosticMessage = $"Error testing libraries: {ex.Message}";
+            alertClass = "alert-danger";
+        }
+        
+        StateHasChanged();
+    }
+
+    private async Task TestAppBrowserInit()
+    {
+        try
+        {
+            if (!appBrowserAvailable)
+            {
+                diagnosticMessage = "AppBrowser not available - cannot test initialization";
+                alertClass = "alert-warning";
+                StateHasChanged();
+                return;
+            }
+
+            await JSRuntime.InvokeVoidAsync("AppBrowser.Initialize");
+            diagnosticMessage = "AppBrowser.Initialize() - SUCCESS";
+            alertClass = "alert-success";
+        }
+        catch (Exception ex)
+        {
+            diagnosticMessage = $"AppBrowser.Initialize() - ERROR: {ex.Message}";
+            alertClass = "alert-danger";
+        }
+        
+        StateHasChanged();
+    }
+
+    private async Task TestBlazorExtensions()
+    {
+        try
+        {
+            if (!blazorExtensionsAvailable)
+            {
+                diagnosticMessage = "BlazorExtensions not available";
+                alertClass = "alert-warning";
+                StateHasChanged();
+                return;
+            }
+
+            var result = await JSRuntime.InvokeAsync<string>("eval", "typeof BlazorExtensions.Canvas2d");
+            diagnosticMessage = $"BlazorExtensions.Canvas2d type: {result}";
+            alertClass = "alert-success";
+        }
+        catch (Exception ex)
+        {
+            diagnosticMessage = $"BlazorExtensions test - ERROR: {ex.Message}";
+            alertClass = "alert-danger";
+        }
+        
+        StateHasChanged();
+    }
+}

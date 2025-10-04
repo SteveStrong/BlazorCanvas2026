@@ -2,70 +2,151 @@
 
 <PageTitle>BlazorCanvas2026 Showcase</PageTitle>
 
-<h1>BlazorCanvas2026 - Canvas Showcase</h1>
+<h1>BlazorCanvas2026 - Canvas Integration Showcase</h1>
 
-<p>Welcome to the FoundryBlazor canvas demonstration project!</p>
+<div class="alert alert-primary">
+    <h4>🎯 Goal: Demonstrate the variety of HTML5 Canvas integration approaches in Blazor</h4>
+    <p>This project showcases three different levels of canvas integration, from basic JavaScript interop to sophisticated component libraries.</p>
+</div>
 
-<div class="showcase-navigation">
-    <h3>Canvas Implementations Available:</h3>
-    
-    <div class="card-grid">
-        <div class="demo-card">
-            <h4>🎨 Raw HTML5 Canvas</h4>
-            <p>Basic HTML5 canvas with JavaScript interop</p>
-            <a href="/canvas" class="btn btn-primary">View Demo</a>
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-header bg-info text-white">
+                <h5><span class="oi oi-brush" aria-hidden="true"></span> Level 1: Direct JavaScript Interop</h5>
+            </div>
+            <div class="card-body">
+                <h6>Canvas.razor</h6>
+                <p><strong>Approach:</strong> Basic HTML5 &lt;canvas&gt; with direct JavaScript calls</p>
+                <ul class="small">
+                    <li>ElementReference to canvas</li>
+                    <li>IJSRuntime.InvokeVoidAsync()</li>
+                    <li>Custom JavaScript functions</li>
+                    <li>Manual context management</li>
+                </ul>
+                <p class="text-success"><strong>Best for:</strong> Simple drawing, learning basics, performance-critical operations</p>
+                <a href="/canvas" class="btn btn-info">View Demo</a>
+            </div>
         </div>
-        
-        <div class="demo-card">
-            <h4>🔧 BECanvas (Blazor.Extensions)</h4>
-            <p>Canvas with C# API wrapper - fully working</p>
-            <a href="/blazorcanvas" class="btn btn-primary">View Demo</a>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-header bg-success text-white">
+                <h5><span class="oi oi-brush" aria-hidden="true"></span> Level 2: C# Canvas API</h5>
+            </div>
+            <div class="card-body">
+                <h6>BlazorCanvas.razor</h6>
+                <p><strong>Approach:</strong> Blazor.Extensions.Canvas - Pure C# API</p>
+                <ul class="small">
+                    <li>BECanvasComponent</li>
+                    <li>Canvas2DContext async methods</li>
+                    <li>Type-safe C# drawing calls</li>
+                    <li>No custom JavaScript needed</li>
+                </ul>
+                <p class="text-success"><strong>Best for:</strong> Type safety, C# developers, complex animations</p>
+                <a href="/blazorcanvas" class="btn btn-success">View Demo</a>
+            </div>
         </div>
-        
-        <div class="demo-card">
-            <h4>🚀 Canvas2D Component (FoundryBlazor)</h4>
-            <p>Advanced 2D canvas with workspace integration</p>
-            <a href="/simplecanvas2d" class="btn btn-success">View Demo</a>
-        </div>
-        
-        <div class="demo-card">
-            <h4>📋 Foundry Canvas Placeholder</h4>
-            <p>Future full FoundryBlazor integration</p>
-            <a href="/foundrycanvas" class="btn btn-outline-secondary">View Placeholder</a>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-header bg-warning text-dark">
+                <h5><span class="oi oi-target" aria-hidden="true"></span> Level 3: Component Library</h5>
+            </div>
+            <div class="card-body">
+                <h6>Canvas2D.razor</h6>
+                <p><strong>Approach:</strong> FoundryBlazor - High-level shape components</p>
+                <ul class="small">
+                    <li>Canvas2DComponent with services</li>
+                    <li>IWorkspace, IFoundryService</li>
+                    <li>Shape management & hit testing</li>
+                    <li>Enterprise-level features</li>
+                </ul>
+                <p class="text-success"><strong>Best for:</strong> Complex applications, shape management, enterprise features</p>
+                <a href="/canvas2d" class="btn btn-warning">View Demo</a>
+            </div>
         </div>
     </div>
 </div>
 
-<style>
-    .showcase-navigation {
-        margin: 20px 0;
-    }
-    
-    .card-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 20px;
-        margin-top: 20px;
-    }
-    
-    .demo-card {
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        padding: 20px;
-        background: #f8f9fa;
-    }
-    
-    .demo-card h4 {
-        margin-top: 0;
-        color: #333;
-    }
-    
-    .demo-card p {
-        color: #666;
-        margin: 10px 0;
-    }
-    
-    .demo-card .btn {
-        margin-top: 10px;
-    }
-</style>
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>� Technical Implementation Details</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>JavaScript Loading Order (Critical)</h6>
+                        <pre class="bg-light p-2 small"><code>&lt;script src="_framework/blazor.server.js"&gt;&lt;/script&gt;
+&lt;script src="_content/Blazor.Extensions.Canvas/blazor.extensions.canvas.js"&gt;&lt;/script&gt;
+&lt;script src="_content/FoundryBlazor/js/app-lib.js"&gt;&lt;/script&gt;
+&lt;script src="js/canvas-interop.js"&gt;&lt;/script&gt;</code></pre>
+                        <p class="small text-muted">⚠️ Order matters! External RCL JavaScript must load before components initialize.</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Service Registration</h6>
+                        <pre class="bg-light p-2 small"><code>// Program.cs
+builder.Services.AddRazorPages();
+builder.Services.AddServerSideBlazor();
+
+// For FoundryBlazor components
+builder.Services.AddFoundryBlazorServices(envConfig);</code></pre>
+                    </div>
+                </div>
+                
+                <h6 class="mt-3">Canvas Approach Comparison</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Direct JS Interop</th>
+                                <th>C# Canvas API</th>
+                                <th>Component Library</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Performance</td>
+                                <td class="text-success">Excellent</td>
+                                <td class="text-warning">Good</td>
+                                <td class="text-info">Good</td>
+                            </tr>
+                            <tr>
+                                <td>Type Safety</td>
+                                <td class="text-danger">None</td>
+                                <td class="text-success">Full</td>
+                                <td class="text-success">Full</td>
+                            </tr>
+                            <tr>
+                                <td>Learning Curve</td>
+                                <td class="text-warning">Moderate</td>
+                                <td class="text-success">Easy</td>
+                                <td class="text-info">Complex</td>
+                            </tr>
+                            <tr>
+                                <td>Features</td>
+                                <td class="text-warning">Basic</td>
+                                <td class="text-success">Complete</td>
+                                <td class="text-success">Enterprise</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="alert alert-info">
+            <h6>🚀 Explore Each Approach</h6>
+            <p>Click the demo buttons above to see each canvas integration approach in action. Each demonstrates different capabilities and use cases for HTML5 Canvas in Blazor applications.</p>
+        </div>
+    </div>
+</div>
