@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="../BlazorThreeJS/BlazorThreeJS.csproj" />
+  <Project Path="../FoundryBlazor/FoundryBlazor.csproj" />
+  <Project Path="../FoundryRulesAndUnits/FoundryRulesAndUnits.csproj" />
+  <Project Path="BlazorCanvas2026.csproj" />
+</Solution>
