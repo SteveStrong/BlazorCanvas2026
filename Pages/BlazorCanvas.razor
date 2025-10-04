@@ -1,24 +1,23 @@
-@page "/canvas"
+@page "/blazorcanvas"
 @using Microsoft.AspNetCore.Components.Web
+@using Blazor.Extensions
+@using Blazor.Extensions.Canvas
+@using Blazor.Extensions.Canvas.Canvas2D
 
 <PageTitle>Canvas</PageTitle>
 
-<h1>HTML5 Canvas</h1>
+<h1>Blazor Canvas</h1>
 
 
 <div class="canvas-layout">
     <div class="canvas-container">
-        <canvas @ref="canvasElement" 
-                id="drawingCanvas" 
-                width="800" 
-                height="600" 
-                style="border: 1px solid #000; cursor: crosshair; background-color: #f0f0f0;"
-                @onmousedown="StartDrawing"
-                @onmousemove="Draw"
-                @onmouseup="StopDrawing"
-                @onmouseleave="StopDrawing">
-            Your browser does not support the HTML5 canvas element.
-        </canvas>
+        <div style="border: 1px solid #000; background-color: #f0f0f0; display: inline-block;"
+             @onmousedown="StartDrawing"
+             @onmousemove="Draw"
+             @onmouseup="StopDrawing"
+             @onmouseleave="StopDrawing">
+            <BECanvas @ref="canvasElement" Width="800" Height="600" />
+        </div>
     </div>
 
     <div class="canvas-controls">
